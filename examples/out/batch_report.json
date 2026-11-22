@@ -1,0 +1,21 @@
+{
+  "definitions_loaded": {
+    "screening-v3": "examples/definitions/screening-v3.json",
+    "screening-v4": "examples/definitions/screening-v4.json"
+  },
+  "definition_rejections": {
+    "examples/definitions/broken-definition.json": [
+      "BAD_REF [q2]: 引用了不存在的题 'q_ghost'"
+    ]
+  },
+  "processed_submissions": [
+    "sub-001",
+    "sub-002",
+    "sub-003"
+  ],
+  "snapshot_rejections": {
+    "examples/snapshots/sub-bad.json": [
+      "UNKNOWN_QUESTION [root.q_unknown_question]: 未知题路径 'q_unknown_question'"
+    ]
+  }
+}

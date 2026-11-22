@@ -1,0 +1,100 @@
+{
+  "submission_id": "sub-003",
+  "version": "screening-v4",
+  "row_count": 3,
+  "facts": [
+    {
+      "version": "screening-v4",
+      "submission_id": "sub-003",
+      "static_path": "q_consent",
+      "instance_path": "",
+      "visibility": "true",
+      "answer_status": "answered",
+      "answer_value": "yes",
+      "reason": null,
+      "list_state": null,
+      "evidence": [
+        {
+          "kind": "cached",
+          "detail": "本题缓存 'yes'，采信为作答",
+          "static_path": "q_consent",
+          "instance_path": "",
+          "value": "yes",
+          "status": "used"
+        }
+      ]
+    },
+    {
+      "version": "screening-v4",
+      "submission_id": "sub-003",
+      "static_path": "grp_contact.q_channel",
+      "instance_path": "grp_contact#c1",
+      "visibility": "true",
+      "answer_status": "illegal_cached_value",
+      "answer_value": "email",
+      "reason": "缓存值 'email' 不是该版本合法值，合法值为 ['sms', 'call']；本题已展示但无有效回答",
+      "list_state": {
+        "closed": true,
+        "instance_count": 1
+      },
+      "evidence": [
+        {
+          "kind": "ref",
+          "detail": "eq 引用 q_consent@<root> -> true；合法缓存值参与裁决，比较值 'yes'",
+          "static_path": "q_consent",
+          "instance_path": "",
+          "value": "yes",
+          "status": "used"
+        },
+        {
+          "kind": "cached",
+          "detail": "本题缓存 'email'，未采信为作答",
+          "static_path": "grp_contact.q_channel",
+          "instance_path": "grp_contact#c1",
+          "value": "email",
+          "status": "excluded"
+        }
+      ]
+    },
+    {
+      "version": "screening-v4",
+      "submission_id": "sub-003",
+      "static_path": "grp_contact.q_detail",
+      "instance_path": "grp_contact#c1",
+      "visibility": "unknown",
+      "answer_status": "undetermined_cached",
+      "answer_value": "old@example.org",
+      "reason": "展示与否当时无法判定，缓存值暂不采信",
+      "list_state": {
+        "closed": true,
+        "instance_count": 1
+      },
+      "evidence": [
+        {
+          "kind": "ref",
+          "detail": "eq 引用 q_consent@<root> -> true；合法缓存值参与裁决，比较值 'yes'",
+          "static_path": "q_consent",
+          "instance_path": "",
+          "value": "yes",
+          "status": "used"
+        },
+        {
+          "kind": "ref",
+          "detail": "eq 引用 grp_contact.q_channel@grp_contact#c1 -> unknown；缓存值 'email' 不在版本合法值 ['sms', 'call'] 内，不参与门控，比较值 'sms'",
+          "static_path": "grp_contact.q_channel",
+          "instance_path": "grp_contact#c1",
+          "value": "email",
+          "status": "illegal"
+        },
+        {
+          "kind": "cached",
+          "detail": "本题缓存 'old@example.org'，未采信为作答",
+          "static_path": "grp_contact.q_detail",
+          "instance_path": "grp_contact#c1",
+          "value": "old@example.org",
+          "status": "excluded"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "submission_id": "sub-001",
+  "version": "screening-v3",
+  "root": {
+    "answers": {
+      "q_consent": "yes"
+    },
+    "groups": {
+      "grp_contact": {
+        "closed": true,
+        "instances": [
+          {
+            "instance_id": "c1",
+            "answers": {
+              "grp_contact.q_channel": "email",
+              "grp_contact.q_detail": "a@example.org"
+            },
+            "groups": {
+              "grp_contact.grp_attempt": {
+                "closed": false,
+                "instances": [
+                  {
+                    "instance_id": "t1",
+                    "answers": {"grp_contact.grp_attempt.q_reached": "no"}
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "instance_id": "c2",
+            "answers": {
+              "grp_contact.q_channel": "fax",
+              "grp_contact.q_detail": "old-hidden-detail"
+            },
+            "groups": {
+              "grp_contact.grp_attempt": {
+                "closed": true,
+                "instances": []
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

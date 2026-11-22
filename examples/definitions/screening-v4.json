@@ -1,0 +1,19 @@
+{
+  "version": "screening-v4",
+  "nodes": [
+    {"id": "q_consent", "type": "choice", "options": ["yes", "no", "unknown"]},
+    {
+      "id": "grp_contact",
+      "type": "group",
+      "children": [
+        {"id": "q_channel", "type": "choice", "options": ["sms", "call"]},
+        {
+          "id": "q_detail",
+          "type": "text",
+          "gate": {"op": "eq", "ref": "grp_contact.q_channel", "value": "sms"}
+        }
+      ],
+      "gate": {"op": "eq", "ref": "q_consent", "value": "yes"}
+    }
+  ]
+}

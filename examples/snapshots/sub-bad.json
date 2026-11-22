@@ -1,0 +1,7 @@
+{
+  "submission_id": "sub-bad",
+  "version": "screening-v3",
+  "root": {
+    "answers": {"q_unknown_question": 1}
+  }
+}

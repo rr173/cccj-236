@@ -1,0 +1,268 @@
+{
+  "submission_id": "sub-001",
+  "version": "screening-v3",
+  "row_count": 8,
+  "facts": [
+    {
+      "version": "screening-v3",
+      "submission_id": "sub-001",
+      "static_path": "q_consent",
+      "instance_path": "",
+      "visibility": "true",
+      "answer_status": "answered",
+      "answer_value": "yes",
+      "reason": null,
+      "list_state": null,
+      "evidence": [
+        {
+          "kind": "cached",
+          "detail": "本题缓存 'yes'，采信为作答",
+          "static_path": "q_consent",
+          "instance_path": "",
+          "value": "yes",
+          "status": "used"
+        }
+      ]
+    },
+    {
+      "version": "screening-v3",
+      "submission_id": "sub-001",
+      "static_path": "grp_contact.q_channel",
+      "instance_path": "grp_contact#c1",
+      "visibility": "true",
+      "answer_status": "answered",
+      "answer_value": "email",
+      "reason": null,
+      "list_state": {
+        "closed": true,
+        "instance_count": 2
+      },
+      "evidence": [
+        {
+          "kind": "ref",
+          "detail": "eq 引用 q_consent@<root> -> true；合法缓存值参与裁决，比较值 'yes'",
+          "static_path": "q_consent",
+          "instance_path": "",
+          "value": "yes",
+          "status": "used"
+        },
+        {
+          "kind": "cached",
+          "detail": "本题缓存 'email'，采信为作答",
+          "static_path": "grp_contact.q_channel",
+          "instance_path": "grp_contact#c1",
+          "value": "email",
+          "status": "used"
+        }
+      ]
+    },
+    {
+      "version": "screening-v3",
+      "submission_id": "sub-001",
+      "static_path": "grp_contact.q_detail",
+      "instance_path": "grp_contact#c1",
+      "visibility": "true",
+      "answer_status": "answered",
+      "answer_value": "a@example.org",
+      "reason": null,
+      "list_state": {
+        "closed": true,
+        "instance_count": 2
+      },
+      "evidence": [
+        {
+          "kind": "ref",
+          "detail": "eq 引用 q_consent@<root> -> true；合法缓存值参与裁决，比较值 'yes'",
+          "static_path": "q_consent",
+          "instance_path": "",
+          "value": "yes",
+          "status": "used"
+        },
+        {
+          "kind": "ref",
+          "detail": "eq 引用 grp_contact.q_channel@grp_contact#c1 -> true；合法缓存值参与裁决，比较值 'email'",
+          "static_path": "grp_contact.q_channel",
+          "instance_path": "grp_contact#c1",
+          "value": "email",
+          "status": "used"
+        },
+        {
+          "kind": "cached",
+          "detail": "本题缓存 'a@example.org'，采信为作答",
+          "static_path": "grp_contact.q_detail",
+          "instance_path": "grp_contact#c1",
+          "value": "a@example.org",
+          "status": "used"
+        }
+      ]
+    },
+    {
+      "version": "screening-v3",
+      "submission_id": "sub-001",
+      "static_path": "grp_contact.grp_attempt.q_reached",
+      "instance_path": "grp_contact#c1.grp_contact.grp_attempt#t1",
+      "visibility": "true",
+      "answer_status": "answered",
+      "answer_value": "no",
+      "reason": null,
+      "list_state": {
+        "closed": false,
+        "instance_count": 1
+      },
+      "evidence": [
+        {
+          "kind": "ref",
+          "detail": "eq 引用 q_consent@<root> -> true；合法缓存值参与裁决，比较值 'yes'",
+          "static_path": "q_consent",
+          "instance_path": "",
+          "value": "yes",
+          "status": "used"
+        },
+        {
+          "kind": "cached",
+          "detail": "本题缓存 'no'，采信为作答",
+          "static_path": "grp_contact.grp_attempt.q_reached",
+          "instance_path": "grp_contact#c1.grp_contact.grp_attempt#t1",
+          "value": "no",
+          "status": "used"
+        }
+      ]
+    },
+    {
+      "version": "screening-v3",
+      "submission_id": "sub-001",
+      "static_path": "grp_contact.q_any_reached",
+      "instance_path": "grp_contact#c1",
+      "visibility": "unknown",
+      "answer_status": "undetermined",
+      "answer_value": null,
+      "reason": "展示与否当时无法判定，且无缓存值",
+      "list_state": {
+        "closed": true,
+        "instance_count": 2
+      },
+      "evidence": [
+        {
+          "kind": "ref",
+          "detail": "eq 引用 q_consent@<root> -> true；合法缓存值参与裁决，比较值 'yes'",
+          "static_path": "q_consent",
+          "instance_path": "",
+          "value": "yes",
+          "status": "used"
+        },
+        {
+          "kind": "exists",
+          "detail": "exists group=grp_contact.grp_attempt ref='grp_contact.grp_attempt.q_reached' value='yes' closed=False listed=1 group_visibility=true",
+          "static_path": "grp_contact.grp_attempt.q_reached",
+          "instance_path": null,
+          "value": null,
+          "status": "open_unknown"
+        }
+      ]
+    },
+    {
+      "version": "screening-v3",
+      "submission_id": "sub-001",
+      "static_path": "grp_contact.q_channel",
+      "instance_path": "grp_contact#c2",
+      "visibility": "true",
+      "answer_status": "illegal_cached_value",
+      "answer_value": "fax",
+      "reason": "缓存值 'fax' 不是该版本合法值，合法值为 ['sms', 'call', 'email']；本题已展示但无有效回答",
+      "list_state": {
+        "closed": true,
+        "instance_count": 2
+      },
+      "evidence": [
+        {
+          "kind": "ref",
+          "detail": "eq 引用 q_consent@<root> -> true；合法缓存值参与裁决，比较值 'yes'",
+          "static_path": "q_consent",
+          "instance_path": "",
+          "value": "yes",
+          "status": "used"
+        },
+        {
+          "kind": "cached",
+          "detail": "本题缓存 'fax'，未采信为作答",
+          "static_path": "grp_contact.q_channel",
+          "instance_path": "grp_contact#c2",
+          "value": "fax",
+          "status": "excluded"
+        }
+      ]
+    },
+    {
+      "version": "screening-v3",
+      "submission_id": "sub-001",
+      "static_path": "grp_contact.q_detail",
+      "instance_path": "grp_contact#c2",
+      "visibility": "unknown",
+      "answer_status": "undetermined_cached",
+      "answer_value": "old-hidden-detail",
+      "reason": "展示与否当时无法判定，缓存值暂不采信",
+      "list_state": {
+        "closed": true,
+        "instance_count": 2
+      },
+      "evidence": [
+        {
+          "kind": "ref",
+          "detail": "eq 引用 q_consent@<root> -> true；合法缓存值参与裁决，比较值 'yes'",
+          "static_path": "q_consent",
+          "instance_path": "",
+          "value": "yes",
+          "status": "used"
+        },
+        {
+          "kind": "ref",
+          "detail": "eq 引用 grp_contact.q_channel@grp_contact#c2 -> unknown；缓存值 'fax' 不在版本合法值 ['sms', 'call', 'email'] 内，不参与门控，比较值 'email'",
+          "static_path": "grp_contact.q_channel",
+          "instance_path": "grp_contact#c2",
+          "value": "fax",
+          "status": "illegal"
+        },
+        {
+          "kind": "cached",
+          "detail": "本题缓存 'old-hidden-detail'，未采信为作答",
+          "static_path": "grp_contact.q_detail",
+          "instance_path": "grp_contact#c2",
+          "value": "old-hidden-detail",
+          "status": "excluded"
+        }
+      ]
+    },
+    {
+      "version": "screening-v3",
+      "submission_id": "sub-001",
+      "static_path": "grp_contact.q_any_reached",
+      "instance_path": "grp_contact#c2",
+      "visibility": "false",
+      "answer_status": "not_asked",
+      "answer_value": null,
+      "reason": "题确定未展示（根本没问）",
+      "list_state": {
+        "closed": true,
+        "instance_count": 2
+      },
+      "evidence": [
+        {
+          "kind": "ref",
+          "detail": "eq 引用 q_consent@<root> -> true；合法缓存值参与裁决，比较值 'yes'",
+          "static_path": "q_consent",
+          "instance_path": "",
+          "value": "yes",
+          "status": "used"
+        },
+        {
+          "kind": "exists",
+          "detail": "exists group=grp_contact.grp_attempt ref='grp_contact.grp_attempt.q_reached' value='yes' closed=True listed=0 group_visibility=true",
+          "static_path": "grp_contact.grp_attempt.q_reached",
+          "instance_path": null,
+          "value": null,
+          "status": "closed_no_match_false"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "version": "screening-v3",
+  "nodes": [
+    {"id": "q_consent", "type": "choice", "options": ["yes", "no"]},
+    {
+      "id": "grp_contact",
+      "type": "group",
+      "children": [
+        {"id": "q_channel", "type": "choice", "options": ["sms", "call", "email"]},
+        {
+          "id": "q_detail",
+          "type": "text",
+          "gate": {"op": "eq", "ref": "grp_contact.q_channel", "value": "email"}
+        },
+        {
+          "id": "grp_attempt",
+          "type": "group",
+          "children": [
+            {"id": "q_reached", "type": "choice", "options": ["yes", "no"]}
+          ]
+        },
+        {
+          "id": "q_any_reached",
+          "type": "text",
+          "gate": {
+            "op": "exists",
+            "group": "grp_contact.grp_attempt",
+            "ref": "grp_contact.grp_attempt.q_reached",
+            "value": "yes"
+          }
+        }
+      ],
+      "gate": {"op": "eq", "ref": "q_consent", "value": "yes"}
+    }
+  ]
+}

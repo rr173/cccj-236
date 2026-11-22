@@ -1,0 +1,11 @@
+{
+  "version": "broken-v1",
+  "nodes": [
+    {"id": "q1", "type": "choice", "options": ["a"]},
+    {
+      "id": "q2",
+      "type": "text",
+      "gate": {"op": "eq", "ref": "q_ghost", "value": "a"}
+    }
+  ]
+}

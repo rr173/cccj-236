@@ -1,0 +1,24 @@
+{
+  "submission_id": "sub-002",
+  "version": "screening-v3",
+  "root": {
+    "answers": {},
+    "groups": {
+      "grp_contact": {
+        "closed": false,
+        "instances": [
+          {
+            "instance_id": "c9",
+            "answers": {"grp_contact.q_channel": "sms"},
+            "groups": {
+              "grp_contact.grp_attempt": {
+                "closed": false,
+                "instances": []
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

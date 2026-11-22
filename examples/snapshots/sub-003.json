@@ -1,0 +1,21 @@
+{
+  "submission_id": "sub-003",
+  "version": "screening-v4",
+  "root": {
+    "answers": {"q_consent": "yes"},
+    "groups": {
+      "grp_contact": {
+        "closed": true,
+        "instances": [
+          {
+            "instance_id": "c1",
+            "answers": {
+              "grp_contact.q_channel": "email",
+              "grp_contact.q_detail": "old@example.org"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

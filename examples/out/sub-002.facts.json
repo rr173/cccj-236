@@ -1,0 +1,115 @@
+{
+  "submission_id": "sub-002",
+  "version": "screening-v3",
+  "row_count": 4,
+  "facts": [
+    {
+      "version": "screening-v3",
+      "submission_id": "sub-002",
+      "static_path": "q_consent",
+      "instance_path": "",
+      "visibility": "true",
+      "answer_status": "displayed_unanswered",
+      "answer_value": null,
+      "reason": "题已展示但没有有效回答",
+      "list_state": null,
+      "evidence": []
+    },
+    {
+      "version": "screening-v3",
+      "submission_id": "sub-002",
+      "static_path": "grp_contact.q_channel",
+      "instance_path": "grp_contact#c9",
+      "visibility": "unknown",
+      "answer_status": "undetermined_cached",
+      "answer_value": "sms",
+      "reason": "展示与否当时无法判定，缓存值暂不采信",
+      "list_state": {
+        "closed": false,
+        "instance_count": 1
+      },
+      "evidence": [
+        {
+          "kind": "ref",
+          "detail": "eq 引用 q_consent@<root> -> unknown；快照无缓存值，按缺答处理，比较值 'yes'",
+          "static_path": "q_consent",
+          "instance_path": "",
+          "value": null,
+          "status": "missing"
+        },
+        {
+          "kind": "cached",
+          "detail": "本题缓存 'sms'，未采信为作答",
+          "static_path": "grp_contact.q_channel",
+          "instance_path": "grp_contact#c9",
+          "value": "sms",
+          "status": "excluded"
+        }
+      ]
+    },
+    {
+      "version": "screening-v3",
+      "submission_id": "sub-002",
+      "static_path": "grp_contact.q_detail",
+      "instance_path": "grp_contact#c9",
+      "visibility": "unknown",
+      "answer_status": "undetermined",
+      "answer_value": null,
+      "reason": "展示与否当时无法判定，且无缓存值",
+      "list_state": {
+        "closed": false,
+        "instance_count": 1
+      },
+      "evidence": [
+        {
+          "kind": "ref",
+          "detail": "eq 引用 q_consent@<root> -> unknown；快照无缓存值，按缺答处理，比较值 'yes'",
+          "static_path": "q_consent",
+          "instance_path": "",
+          "value": null,
+          "status": "missing"
+        },
+        {
+          "kind": "ref",
+          "detail": "eq 引用 grp_contact.q_channel@grp_contact#c9 -> unknown；缓存值合法但题可见性未定，按缺答处理，不参与门控，比较值 'email'",
+          "static_path": "grp_contact.q_channel",
+          "instance_path": "grp_contact#c9",
+          "value": "sms",
+          "status": "undetermined_unused"
+        }
+      ]
+    },
+    {
+      "version": "screening-v3",
+      "submission_id": "sub-002",
+      "static_path": "grp_contact.q_any_reached",
+      "instance_path": "grp_contact#c9",
+      "visibility": "unknown",
+      "answer_status": "undetermined",
+      "answer_value": null,
+      "reason": "展示与否当时无法判定，且无缓存值",
+      "list_state": {
+        "closed": false,
+        "instance_count": 1
+      },
+      "evidence": [
+        {
+          "kind": "ref",
+          "detail": "eq 引用 q_consent@<root> -> unknown；快照无缓存值，按缺答处理，比较值 'yes'",
+          "static_path": "q_consent",
+          "instance_path": "",
+          "value": null,
+          "status": "missing"
+        },
+        {
+          "kind": "exists",
+          "detail": "exists group=grp_contact.grp_attempt ref='grp_contact.grp_attempt.q_reached' value='yes' closed=False listed=0 group_visibility=unknown",
+          "static_path": "grp_contact.grp_attempt.q_reached",
+          "instance_path": null,
+          "value": null,
+          "status": "open_unknown"
+        }
+      ]
+    }
+  ]
+}
