@@ -8,9 +8,12 @@
   python -I -m pipeline.cli init-panel --db panel.db --mapping mapping.json
   python -I -m pipeline.cli panel-apply --db panel.db --mapping mapping.json \
       --updates batch1.json batch2.json --report-out report.json
+  python -I -m pipeline.cli copy-audit --facts-dir out/ \
+      --questions q1 q2 q3 q4 q5 --out copy-audit.json
 
 输出：每份提交一个 <submission_id>.facts.json，外加 batch_report.json；
-面板库内含 panel_member（双波次转移明细）与 panel_summary（转移格人数）。
+面板库内含 panel_member（双波次转移明细）与 panel_summary（转移格人数）；
+copy-audit 输出疑似复填清单（只发现线索，不改写任何答卷）。
 """
 
 from __future__ import annotations
@@ -25,6 +28,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline.batch import run_batch
+from pipeline.copyaudit import CopyAuditError, run_copy_audit
 from pipeline.engine import evaluate_snapshot
 from pipeline.errors import DefinitionRejected, SnapshotRejected
 from pipeline.panel import (
@@ -145,6 +149,25 @@ def _cmd_panel_apply(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_copy_audit(args: argparse.Namespace) -> int:
+    try:
+        stats = run_copy_audit(args.facts_dir, args.questions, args.out)
+    except CopyAuditError as exc:
+        print(f"复填核查失败: {exc}", file=sys.stderr)
+        return 6
+    except OSError as exc:
+        # 清单写不出去：已有清单保持不变（原子写入）。
+        print(f"复填核查失败: 无法写出清单: {exc}", file=sys.stderr)
+        return 6
+    print(
+        f"已核查 {stats.submission_count} 份提交；"
+        f"进入逐对核验 {stats.candidate_pair_count} 对；"
+        f"直接线索 {stats.clue_count} 条；簇 {stats.cluster_count} 个。"
+        f"清单: {args.out}"
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="离线问卷事实裁决管线")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -182,6 +205,24 @@ def build_parser() -> argparse.ArgumentParser:
     )
     panel_apply.add_argument("--report-out", help="可选：批处理报告输出路径")
     panel_apply.set_defaults(func=_cmd_panel_apply)
+
+    copy_audit = sub.add_parser(
+        "copy-audit",
+        help="同一轮事实表的疑似复填线索核查（只发现线索，不改写答卷）",
+    )
+    copy_audit.add_argument(
+        "--facts-dir", required=True,
+        help="一轮 *.facts.json 所在目录（只读目录一级，不读 batch_report.json）",
+    )
+    copy_audit.add_argument(
+        "--questions", nargs="+", required=True,
+        help="同一问卷版本下 4~8 个不同的根级题路径",
+    )
+    copy_audit.add_argument(
+        "--out", required=True,
+        help="清单 JSON 输出路径（原子写入；本轮失败时已有清单不变）",
+    )
+    copy_audit.set_defaults(func=_cmd_copy_audit)
     return parser
 
 
