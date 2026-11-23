@@ -1,0 +1,34 @@
+{
+  "version": "delivery-v1",
+  "nodes": [
+    {"id": "q_consent", "type": "choice", "options": ["yes", "no"]},
+    {
+      "id": "grp_visit",
+      "type": "group",
+      "gate": {"op": "eq", "ref": "q_consent", "value": "yes"},
+      "children": [
+        {"id": "q_hit", "type": "choice", "options": ["yes", "no"]}
+      ]
+    },
+    {
+      "id": "q_followup",
+      "type": "text",
+      "gate": {"op": "exists", "group": "grp_visit", "ref": "grp_visit.q_hit", "value": "yes"}
+    },
+    {
+      "id": "grp_household",
+      "type": "group",
+      "gate": {"op": "eq", "ref": "q_consent", "value": "yes"},
+      "children": [
+        {"id": "q_label", "type": "text"},
+        {
+          "id": "grp_person",
+          "type": "group",
+          "children": [
+            {"id": "q_age", "type": "number"}
+          ]
+        }
+      ]
+    }
+  ]
+}

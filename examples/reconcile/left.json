@@ -1,0 +1,44 @@
+{
+  "submission_id": "delivery-001",
+  "version": "delivery-v1",
+  "root": {
+    "answers": {"q_consent": "yes"},
+    "groups": {
+      "grp_visit": {
+        "closed": false,
+        "instances": [
+          {"instance_id": "v1", "answers": {"grp_visit.q_hit": "yes"}}
+        ]
+      },
+      "grp_household": {
+        "closed": true,
+        "instances": [
+          {
+            "instance_id": "hh_a",
+            "answers": {"grp_household.q_label": "A"},
+            "groups": {
+              "grp_household.grp_person": {
+                "closed": true,
+                "instances": [
+                  {"instance_id": "m1", "answers": {"grp_household.grp_person.q_age": 31}}
+                ]
+              }
+            }
+          },
+          {
+            "instance_id": "hh_b",
+            "answers": {"grp_household.q_label": "B"},
+            "groups": {
+              "grp_household.grp_person": {
+                "closed": true,
+                "instances": [
+                  {"instance_id": "m1", "answers": {"grp_household.grp_person.q_age": 40}}
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -10,10 +10,13 @@
       --updates batch1.json batch2.json --report-out report.json
   python -I -m pipeline.cli copy-audit --facts-dir out/ \
       --questions q1 q2 q3 q4 q5 --out copy-audit.json
+  python -I -m pipeline.cli reconcile --definition def.json \
+      --base sent.json --left device-a.json --right device-b.json --out merged.json
 
 输出：每份提交一个 <submission_id>.facts.json，外加 batch_report.json；
 面板库内含 panel_member（双波次转移明细）与 panel_summary（转移格人数）；
-copy-audit 输出疑似复填清单（只发现线索，不改写任何答卷）。
+copy-audit 输出疑似复填清单（只发现线索，不改写任何答卷）；
+reconcile 输出一份 json（snapshot + facts），可再喂给 one。
 """
 
 from __future__ import annotations
@@ -41,6 +44,11 @@ from pipeline.panel import (
     open_panel,
 )
 from pipeline.serialize import facts_to_dict
+from pipeline.reconcile import (
+    MergeConflicts,
+    ReconcileInputError,
+    reconcile,
+)
 from pipeline.validate import load_definition, load_snapshot_file
 
 
@@ -168,6 +176,30 @@ def _cmd_copy_audit(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_reconcile(args: argparse.Namespace) -> int:
+    try:
+        result = reconcile(
+            args.definition, args.base, args.left, args.right, args.out
+        )
+    except ReconcileInputError as exc:
+        print(f"无法合并: {exc}", file=sys.stderr)
+        return 7
+    except MergeConflicts as exc:
+        print("合并冲突，未交付任何答卷；已有输出保持不变:", file=sys.stderr)
+        for conflict in exc.conflicts:
+            print(f"  {conflict}", file=sys.stderr)
+        return 8
+    except OSError as exc:
+        # 输出写不出去：已有输出保持不变（原子写入）。
+        print(f"无法写出合并结果: {exc}", file=sys.stderr)
+        return 7
+    print(
+        f"已合并提交 {result.submission_id}（版本 {result.version}），"
+        f"事实行 {result.fact_row_count} 条。输出: {args.out}"
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="离线问卷事实裁决管线")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -223,6 +255,20 @@ def build_parser() -> argparse.ArgumentParser:
         help="清单 JSON 输出路径（原子写入；本轮失败时已有清单不变）",
     )
     copy_audit.set_defaults(func=_cmd_copy_audit)
+
+    reconcile_cmd = sub.add_parser(
+        "reconcile",
+        help="同一提交的基准快照 + 两份离线回传快照三路合并（输出 snapshot + facts）",
+    )
+    reconcile_cmd.add_argument("--definition", required=True)
+    reconcile_cmd.add_argument("--base", required=True, help="当初发出的快照（共同基准）")
+    reconcile_cmd.add_argument("--left", required=True, help="第一台设备的回传快照")
+    reconcile_cmd.add_argument("--right", required=True, help="第二台设备的回传快照")
+    reconcile_cmd.add_argument(
+        "--out", required=True,
+        help="合并结果 JSON 输出路径（原子写入；失败时已有输出不变）",
+    )
+    reconcile_cmd.set_defaults(func=_cmd_reconcile)
     return parser
 
 
