@@ -24,9 +24,11 @@ pipeline/            管线代码（与数据目录分离）
   engine.py          门控求值、实例遍历、事实裁决
   serialize.py       事实表 JSON 序列化
   batch.py           多定义/多快照批处理与故障隔离
+  panel.py           双波次面板转移库（SQLite，panel-apply 的核心）
   cli.py             命令行实现
-tests/               40 个 unittest 用例
+tests/               unittest 用例
 examples/            示例定义与快照（不可信数据，独立目录）
+  panel/             面板库映射、可复跑端到端演示与只读查询助手
 run_pipeline.py      -I 友好的命令行入口
 run_tests.py         -I 友好的测试入口
 ```
@@ -45,6 +47,121 @@ python -I run_pipeline.py batch \
 
 # 单份
 python -I run_pipeline.py one --definition <def.json> --snapshot <snap.json>
+```
+
+## 双波次面板转移库（panel-apply）
+
+面向「同一个人首访 → 回访如何改变回答」的面板分析。**一个 SQLite 库负责一项
+指标**，直接消费 `one`/`batch` 产出的事实 JSON，不重新裁决任何题目门控。
+
+### 建库映射（一经固定）
+
+```json
+{
+  "indicator": "livelihood_choice",
+  "versions": [
+    {"version": "screening-v3",
+     "target_static_path": "grp_members.q_live",
+     "codes": [{"code": 1, "category": "farming"},
+               {"code": "1", "category": "string_one_demo"}]},
+    {"version": "screening-v4",
+     "target_static_path": "grp_members.q_live",
+     "codes": [{"code": 1, "category": "paid_labor"}]}
+  ]
+}
+```
+
+- 每个版本指定**一个根级重复组内目标选择题**的静态路径；其他题一律不入仓。
+- 代码按解析后的 JSON 类型识别：整数 `1` 与字符串 `"1"` 是两个不同代码
+  （布尔 `true` 也不等于 `1`）；类别必须是非空字符串。
+- 映射在建库时写入库内并保存指纹；之后 `panel-apply` 带入任何不同映射直接
+  报 `MAPPING_CONFLICT`，不做写入。
+
+### 批更新格式
+
+每个更新文件是独立事务批次，内含一个非空更新数组；同批不得出现两个操作
+针对同一家庭的同一波次。
+
+```json
+[
+  {"family_id": "HH-1", "wave": "first", "revision": 1,
+   "operation": "replace",
+   "facts": { "<one/batch 产出的完整事实 JSON>": null },
+   "crosswalk": [
+     {"instance_path": "grp_members#m1", "member_id": "M_ALICE"}
+   ]},
+  {"family_id": "HH-1", "wave": "second", "revision": 3,
+   "operation": "withdraw"}
+]
+```
+
+- 成员身份**只来自对照**：把目标题行的 `instance_path` 关联到调查组发放的
+  稳定成员 ID，绝不从路径推导成员；目标题事实行与对照必须一一对应，允许
+  两者同时为空（表示该波该题无成员）。
+- `replace` 必须同时带 `facts` 与 `crosswalk`；`withdraw` 两者都不得带。
+- 波次取值 `first` / `second`；修订号必须是正整数。
+- 内容比较基于解析后的 JSON（忽略空白与对象键顺序），与文件名无关。
+
+### 修订水位与事务语义
+
+- 每个家庭每波独立以**最高已接受修订**为准；撤回后水位仍保留，更低修订
+  永不改变状态、不能让撤回内容复活。
+- 同修订同内容重送为幂等（不重复计算）；同修订异内容报 `REVISION_CONFLICT`。
+- 批内任一输入无效或出现同修订冲突，整批回滚，不留下任何改动。
+- 常规入库只重建**本批涉及家庭**的成员明细与受影响汇总格，绝不扫描其他
+  家庭；水位、成员转移、人数在同一 SQLite 事务中生效。
+
+### 状态种类（类别与原因分开标识）
+
+明细两端各有 `state_kind` + `state_value`：
+
+| 情况 | state_kind | state_value |
+| --- | --- | --- |
+| 展示且有效作答，代码命中映射 | `category` | 映射的统一类别 |
+| 已采信作答但代码无映射（不读缓存兜底） | `reason` | `unmapped` |
+| 确定未展示（`visibility=false`） | `reason` | `not_presented` |
+| 展示与否未定（`visibility=unknown`） | `reason` | `undetermined` |
+| 展示但无有效作答（未答/非法缓存） | `reason` | `presented_unanswered` |
+| 成员只在另一波出现（不代表该成员不存在） | `no_observation` | `no_observation` |
+
+只有 `visibility=true` 且 `answer_status=answered` 的行才读取 `answer_value`
+换算类别；其余行里可能残留的缓存值一律不读。
+
+### 命令与两张结果表
+
+```bash
+# 建库（映射固定）
+python -I run_pipeline.py init-panel --db panel.db \
+    --mapping examples/panel/mapping.json
+
+# 入仓（可一次给多个批次文件，每个文件独立事务）
+python -I run_pipeline.py panel-apply --db panel.db \
+    --mapping examples/panel/mapping.json \
+    --updates batch-1.json batch-2.json --report-out report.json
+
+# 只读查询助手（或直接用 sqlite3 标准库执行 SQL）
+python -I examples/panel/query_panel.py panel.db --family HH-1
+```
+
+- **`panel_member`**：以「家庭 ID + 稳定成员 ID」唯一，覆盖两波成员并集；
+  每行给出两端状态，有事实的一端可回指提交 ID、版本、静态路径、实例路径。
+- **`panel_summary`**：按两端 `(state_kind, state_value)` 转移格给出人数，
+  每个明细恰好贡献一人，不保留零人数格。
+
+```sql
+-- 逐人核查
+SELECT * FROM panel_member WHERE family_id = 'HH-1';
+-- 直接汇总
+SELECT first_state_kind, first_state_value,
+       second_state_kind, second_state_value, person_count
+FROM panel_summary;
+```
+
+可复跑的端到端演示（位置重用、同代码跨版本不同类别、成员退出/加入、
+撤回防复活、冲突整批回滚）：
+
+```bash
+python -I examples/panel/run_panel_demo.py
 ```
 
 ## 定义契约

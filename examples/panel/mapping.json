@@ -1,0 +1,22 @@
+{
+  "indicator": "livelihood_choice",
+  "versions": [
+    {
+      "version": "screening-v3",
+      "target_static_path": "grp_members.q_live",
+      "codes": [
+        {"code": 1, "category": "farming"},
+        {"code": 2, "category": "trade"},
+        {"code": "1", "category": "string_one_demo"}
+      ]
+    },
+    {
+      "version": "screening-v4",
+      "target_static_path": "grp_members.q_live",
+      "codes": [
+        {"code": 1, "category": "paid_labor"},
+        {"code": 3, "category": "remittance"}
+      ]
+    }
+  ]
+}
